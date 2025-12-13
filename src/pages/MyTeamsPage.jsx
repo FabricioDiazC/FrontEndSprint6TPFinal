@@ -11,8 +11,6 @@ export default function MyTeamsPage() {
     const { register, handleSubmit, reset } = useForm();
     const { user } = useAuth();
 
-    useEffect(() => { loadTeams(); }, []);
-
     const loadTeams = async () => {
         try {
             const res = await api.get('/teams');
@@ -21,6 +19,8 @@ export default function MyTeamsPage() {
             console.error(error);
         }
     };
+
+    useEffect(() => { loadTeams(); }, []);
 
     const createTeam = async (data) => {
         try {
@@ -56,7 +56,7 @@ export default function MyTeamsPage() {
                 await api.delete(`/teams/${teamId}`);
                 toast.success('Equipo eliminado correctamente');
                 loadTeams();
-            } catch (error) {
+            } catch {
                 toast.error('No se pudo eliminar el equipo');
             }
         }
@@ -85,7 +85,7 @@ export default function MyTeamsPage() {
                 );
                 
                 loadTeams();
-            } catch (error) {
+            } catch {
                 toast.error('Error al eliminar equipos');
             }
         }

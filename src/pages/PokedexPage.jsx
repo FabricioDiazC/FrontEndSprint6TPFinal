@@ -44,7 +44,7 @@ export default function PokedexPage() {
         try {
             const res = await api.get('/teams');
             setTeams(res.data);
-        } catch (error) {
+        } catch {
             console.error("Error cargando equipos");
         }
     };

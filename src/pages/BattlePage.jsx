@@ -22,7 +22,7 @@ export default function BattlePage() {
                 ]);
                 setMyTeams(myRes.data);
                 setRivalTeams(rivalRes.data);
-            } catch (error) {
+            } catch {
                 toast.error("Error cargando equipos");
             }
         };

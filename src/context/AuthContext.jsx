@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
                 return false;
             }
             return true; 
-        } catch (error) {
+        } catch {
             return false; 
         }
     };

@@ -41,7 +41,7 @@ export default function ProfilePage() {
             
             const teamsRes = await api.get('/teams');
             setMyTeams(teamsRes.data);
-        } catch (error) {
+        } catch {
             toast.error("Error cargando perfil");
         }
     };
@@ -62,7 +62,7 @@ export default function ProfilePage() {
             
             loadData();
 
-        } catch (error) {
+        } catch {
             toast.error("Error al guardar cambios");
         }
     };
