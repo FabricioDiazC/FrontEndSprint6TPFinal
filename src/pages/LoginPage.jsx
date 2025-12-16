@@ -2,10 +2,11 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Spinner from '../components/Spinner';
 
 export default function LoginPage() {
 
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors, isSubmitting  } } = useForm();
     const { login } = useAuth();
     const navigate = useNavigate();
 
@@ -59,10 +60,22 @@ export default function LoginPage() {
                     </div>
 
                     <button 
-                        type="submit" 
-                        className="w-full bg-red-600 text-white py-2 rounded font-bold hover:bg-red-700 transition duration-200 shadow-md"
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={`w-full py-2 rounded font-bold transition duration-200 shadow-md flex justify-center items-center border border-transparent
+                            ${isSubmitting 
+                                ? 'bg-white border-red-600 cursor-not-allowed' 
+                                : 'bg-red-600 text-white hover:bg-red-700'     
+                            }`}
                     >
-                        Entrar
+                        {isSubmitting ? (
+                            <>
+                            <Spinner className="h-5 w-5" />
+                            <span className="ml-2 text-red-600">Entrando...</span>
+                            </>
+                        ) : (
+                            'Entrar'
+                        )}
                     </button>
                 </form>
 

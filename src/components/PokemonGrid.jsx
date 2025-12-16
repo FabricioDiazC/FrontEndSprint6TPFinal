@@ -1,4 +1,5 @@
 import React from 'react';
+import Spinner from './Spinner';
 
 
 const TYPE_COLORS = {
@@ -19,11 +20,10 @@ const TYPE_COLORS = {
     dragon:   'bg-violet-600 text-white',
     steel:    'bg-slate-400 text-white',
     dark:     'bg-gray-800 text-white',
-    fairy:    'bg-pink-400 text-white',
-    unknown:  'bg-gray-400 text-white'
+    fairy:    'bg-pink-400 text-white'
 };
 
-export default function PokemonGrid({ pokemons, isLoading, selectedTeam, onAddToTeam, onClearFilters }) {
+export default function PokemonGrid({ pokemons, isLoading, selectedTeam, onAddToTeam, onClearFilters, addingId, isTeamFull }) {
     
     
     if (isLoading) {
@@ -79,13 +79,25 @@ export default function PokemonGrid({ pokemons, isLoading, selectedTeam, onAddTo
                     {/* Botón de Agregar al Equipo */}
                     <button 
                         onClick={() => onAddToTeam(poke._id)}
-                        className={`mt-auto w-full py-1.5 rounded text-sm font-bold transition shadow-sm
-                            ${selectedTeam 
-                                ? 'bg-red-600 text-white hover:bg-red-700 hover:shadow-red-200' 
-                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
-                        disabled={!selectedTeam}
+                        disabled={!selectedTeam || addingId === poke._id || isTeamFull}
+                        className={`mt-auto w-full py-1.5 rounded text-sm font-bold transition shadow-sm flex justify-center items-center gap-2 border border-transparent
+                            ${!selectedTeam || isTeamFull // Si no hay equipo o está lleno -> Gris
+                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                : addingId === poke._id 
+                                    ? 'bg-white border-red-600 text-red-600 cursor-wait' 
+                                    : 'bg-red-600 text-white hover:bg-red-700' 
+                            }`}
                     >
-                        {selectedTeam ? 'Capturar' : 'Elige Equipo'}
+                        {addingId === poke._id ? (
+                            <>
+                                <Spinner className="h-4 w-4" />
+                                <span>Capturando...</span>
+                            </>
+                        ) : (
+                            // 3. Lógica del Texto
+                            !selectedTeam ? 'Elige Equipo' :
+                            isTeamFull ? 'Equipo Lleno' : 'Capturar'
+                        )}
                     </button>
                 </div>
             ))}

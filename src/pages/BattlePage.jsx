@@ -49,22 +49,28 @@ export default function BattlePage() {
     const myStats = calculateStats(myTeam);
     const rivalStats = calculateStats(rivalTeam);
 
+    const isMyTeamEmpty = myTeam && myTeam.pokemons.length === 0;
+    const isRivalTeamEmpty = rivalTeam && rivalTeam.pokemons.length === 0;
+    const canStartBattle = myTeam && rivalTeam && !isMyTeamEmpty && !isRivalTeamEmpty;
+
 
     const getChartData = () => {
         if (!myStats || !rivalStats) return [];
         
+        const MAX_STAT = 1530;
 
         return [
-            { subject: 'HP', A: myStats.hp, B: rivalStats.hp, fullMark: 1000 },
-            { subject: 'Ataque', A: myStats.attack, B: rivalStats.attack, fullMark: 1000 },
-            { subject: 'Defensa', A: myStats.defense, B: rivalStats.defense, fullMark: 1000 },
-            { subject: 'Velocidad', A: myStats.speed, B: rivalStats.speed, fullMark: 1000 },
-            { subject: 'Sp. Atk', A: myStats.spAtk, B: rivalStats.spAtk, fullMark: 1000 },
-            { subject: 'Sp. Def', A: myStats.spDef, B: rivalStats.spDef, fullMark: 1000 },
+            { subject: 'HP', A: myStats.hp, B: rivalStats.hp, fullMark: MAX_STAT },
+            { subject: 'Ataque', A: myStats.attack, B: rivalStats.attack, fullMark: MAX_STAT },
+            { subject: 'Defensa', A: myStats.defense, B: rivalStats.defense, fullMark: MAX_STAT },
+            { subject: 'Velocidad', A: myStats.speed, B: rivalStats.speed, fullMark: MAX_STAT },
+            { subject: 'Sp. Atk', A: myStats.spAtk, B: rivalStats.spAtk, fullMark: MAX_STAT },
+            { subject: 'Sp. Def', A: myStats.spDef, B: rivalStats.spDef, fullMark: MAX_STAT },
         ];
     };
 
     const handleStartBattle = () => {
+        if (!canStartBattle) return;
         if (!myStats || !rivalStats) return;
 
         const myTotal = Object.values(myStats).reduce((a, b) => a + b, 0);
@@ -116,7 +122,8 @@ export default function BattlePage() {
                     </select>
                     {myTeam && (
                         <div key={myTeam._id} className="mt-4 flex gap-2 justify-center flex-wrap animate-fade-in">
-                            {myTeam.pokemons.map((p,index) => (
+                            {myTeam.pokemons.length === 0 && <p className="text-red-500 font-bold text-sm">⚠️ Equipo vacío</p>}
+                            {myTeam.pokemons.map((p, index) => (
                                 <img key={`${p._id}-${index}`} src={p.sprite} alt={p.name} className="w-12 h-12 object-contain" />
                             ))}
                         </div>
@@ -137,9 +144,10 @@ export default function BattlePage() {
                         ))}
                     </select>
                     {rivalTeam && (
-                        <div className="mt-4 flex gap-2 justify-center flex-wrap animate-fade-in">
+                        <div key={rivalTeam._id} className="mt-4 flex gap-2 justify-center flex-wrap animate-fade-in">
+                            {rivalTeam.pokemons.length === 0 && <p className="text-red-500 font-bold text-sm">⚠️ Equipo vacío</p>}
                             {rivalTeam.pokemons.map((p, index) => (
-                                <img key={`${p._id}-${index}`} src={p.sprite} alt={p.name} className="w-12 h-12 object-contain " />
+                                <img key={`${p._id}-${index}`} src={p.sprite} alt={p.name} className="w-12 h-12 object-contain" />
                             ))}
                         </div>
                     )}
@@ -147,13 +155,27 @@ export default function BattlePage() {
             </div>
 
             
-            <div className="flex justify-center my-8">
+            <div className="flex flex-col items-center my-8 gap-4">
+                
+                
+                {(isMyTeamEmpty || isRivalTeamEmpty) && (
+                    <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 font-bold rounded shadow-sm animate-bounce">
+                        ⚠️ Se debe seleccionar un equipo que tenga al menos 1 Pokémon
+                    </div>
+                )}
+
+                
                 {myTeam && rivalTeam && !hasFought && (
                     <button 
                         onClick={handleStartBattle}
-                        className="bg-linear-to-b from-yellow-400 to-orange-500 text-white text-3xl font-black py-4 px-16 rounded-full shadow-[0_10px_0_rgb(180,83,9)] hover:shadow-[0_6px_0_rgb(180,83,9)] hover:translate-y-1 transition-all active:translate-y-2 uppercase tracking-wider animate-pulse"
+                        disabled={!canStartBattle}
+                        className={`text-3xl font-black py-4 px-16 rounded-full shadow-lg transition-all uppercase tracking-wider
+                            ${canStartBattle 
+                                ? 'bg-linear-to-b from-yellow-400 to-orange-500 text-white hover:shadow-xl hover:translate-y-1 active:translate-y-2 animate-pulse cursor-pointer' 
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed grayscale shadow-none' 
+                            }`}
                     >
-                        Iniciar combate
+                        Iniciar el combate
                     </button>
                 )}
             </div>
@@ -183,7 +205,7 @@ export default function BattlePage() {
                                 <RadarChart cx="50%" cy="50%" outerRadius="80%" data={getChartData()}>
                                     <PolarGrid />
                                     <PolarAngleAxis dataKey="subject" />
-                                    <PolarRadiusAxis angle={30} domain={[0, 800]} /> 
+                                    <PolarRadiusAxis angle={30} domain={[0, 1530]} /> 
                                     
                                     {/* Tu Equipo (Azul) */}
                                     <Radar

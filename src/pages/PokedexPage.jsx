@@ -14,6 +14,10 @@ export default function PokedexPage() {
     const [filters, setFilters] = useState({ name: '', type: '', generation: '' });
     const [teams, setTeams] = useState([]);
     const [selectedTeam, setSelectedTeam] = useState('');
+    const [addingId, setAddingId] = useState(null);
+
+    const currentTeamObj = teams.find(t => t._id === selectedTeam);
+    const isTeamFull = currentTeamObj?.pokemons?.length === 6;
 
 
     useEffect(() => { loadPokemons(); }, [page, filters]);
@@ -52,11 +56,15 @@ export default function PokedexPage() {
 
     const addToTeam = async (pokemonId) => {
         if(!selectedTeam) return toast.warning('Selecciona un equipo primero');
+        setAddingId(pokemonId);
         try {
             await api.put(`/teams/${selectedTeam}/add`, { pokemonId });
             toast.success('¡Pokémon añadido al equipo!');
+            await loadTeams(); 
         } catch (error) {
             toast.error(error.response?.data?.message || 'Error al agregar');
+        }finally {
+            setAddingId(null);
         }
     };
 
@@ -105,6 +113,8 @@ export default function PokedexPage() {
                 selectedTeam={selectedTeam}
                 onAddToTeam={addToTeam}
                 onClearFilters={handleClearFilters}
+                addingId={addingId}
+                isTeamFull={isTeamFull}
             />
 
             

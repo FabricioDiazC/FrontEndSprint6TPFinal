@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import api from '../api/axiosConfig';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
+import Spinner from '../components/Spinner';
 
 
 const AVATARS = [
@@ -16,7 +17,7 @@ const AVATARS = [
 
 export default function ProfilePage() {
     const { user, setUser } = useAuth(); 
-    const { register, handleSubmit, setValue, watch } = useForm();
+    const { register, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm();
     const [myTeams, setMyTeams] = useState([]);
     const [fullProfile, setFullProfile] = useState(null);
 
@@ -111,8 +112,22 @@ export default function ProfilePage() {
                             </select>
                         </div>
 
-                        <button className="w-full bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-700 transition">
-                            Guardar Cambios
+                        <button 
+                            disabled={isSubmitting}
+                            className={`w-full py-2 rounded font-bold transition duration-200 shadow-md flex justify-center items-center border border-transparent
+                                ${isSubmitting 
+                                    ? 'bg-white border-red-600 cursor-not-allowed' // ESTILO CARGANDO: Blanco con borde rojo
+                                    : 'bg-red-600 text-white hover:bg-red-700'     // ESTILO NORMAL: Rojo sólido
+                                }`}
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <Spinner className="h-5 w-5" />
+                                    <span>Guardando...</span>
+                                </>
+                            ) : (
+                                'Guardar cambios'
+                            )}
                         </button>
                     </form>
                 </div>
